@@ -34,6 +34,19 @@ manages firewall rules for you, and works from anywhere you are.
 
 [:books: Read the full add-on documentation][docs]
 
+## Installation
+
+This is a fork of the official Tailscale add-on, modified for device compatibility.
+
+1. In Home Assistant, go to **Settings** → **Add-ons** → **Add-on store**.
+2. Click the **⋮** (three dots) in the top right and choose **Repositories**.
+3. Add this repository URL (use your actual fork URL if you host it on GitHub):
+   ```
+   https://github.com/YOUR_USERNAME/app-tailscale
+   ```
+4. Click **Save**, then refresh the add-on store.
+5. Find **Tailscale** under the new repository and install it.
+
 ## Support
 
 Got questions?
