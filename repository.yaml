@@ -1,5 +1,5 @@
 # Home Assistant add-on repository configuration
 # https://developers.home-assistant.io/docs/add-ons/repository
 name: Tailscale Add-on (fork)
-url: https://github.com/YOUR_USERNAME/app-tailscale
+url: https://github.com/siemian/app-tailscale
 maintainer: Fork maintainer
