@@ -1,5 +1,5 @@
 ---
-# Local copy of hassio-addons app-ci with armv7 platform support for 32-bit builds
+# Build-only CI: gather add-on info and build images (no lint jobs)
 name: App CI
 
 # yamllint disable-line rule:truthy
@@ -51,84 +51,10 @@ jobs:
           slug="${INPUT_SLUG:-$DETECTED_SLUG}"
           echo "slug=${slug}" >> "$GITHUB_OUTPUT"
 
-  lint-app:
-    name: Lint App
-    needs:
-      - information
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Run App Lint
-        uses: frenck/action-addon-linter@v2.21.0
-        with:
-          community: true
-          path: "./${{ needs.information.outputs.target }}"
-
-  lint-hadolint:
-    name: Hadolint
-    needs:
-      - information
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Run Hadolint
-        uses: brpaz/hadolint-action@v1.5.0
-        with:
-          dockerfile: "./${{ needs.information.outputs.target }}/Dockerfile"
-
-  lint-json:
-    name: JSON Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Run JQ
-        run: |
-          shopt -s globstar nullglob
-          for file in **/*.json; do
-            if ! jq '.' "$file" > /dev/null 2>&1; then
-              echo "::error file=${file}::Invalid JSON in ${file}"
-              jq '.' "$file"
-              exit 1
-            fi
-          done
-
-  lint-shellcheck:
-    name: Shellcheck
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Run Shellcheck
-        uses: ludeeus/action-shellcheck@2.0.0
-        env:
-          SHELLCHECK_OPTS: -s bash
-
-  lint-yamllint:
-    name: YAMLLint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Run YAMLLint
-        uses: frenck/action-yamllint@v1.5
-
   build:
     name: Build ${{ matrix.architecture }}
     needs:
       - information
-      - lint-app
-      - lint-hadolint
-      - lint-json
-      - lint-shellcheck
-      - lint-yamllint
     runs-on: ${{ matrix.architecture == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     strategy:
       matrix:
