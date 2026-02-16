@@ -3,7 +3,7 @@ FROM $BUILD_FROM as base
 
 ENV LANG C.UTF-8
 # Version format X.Y.Z-A; stable tarball uses X.Y.Z (e.g. 2.8.0-1 -> 2.8.0)
-ARG BUILD_VERSION=2.8.1-1
+ARG BUILD_VERSION=2.8.0-1
 
 RUN apk add --no-cache socat tini nodejs eudev && \
     # Validation to confirm that curl is installed in the base image.
