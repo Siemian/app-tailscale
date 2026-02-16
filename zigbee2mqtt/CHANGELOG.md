@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.8.1-1
+- Updated Zigbee2MQTT to version [`2.8.1`](https://github.com/Koenkk/zigbee2mqtt/releases/tag/2.8.1)
+
 ## 2.8.0-1
 - Updated Zigbee2MQTT to version [`2.8.0`](https://github.com/Koenkk/zigbee2mqtt/releases/tag/2.8.0)
 - Fork: restored 32-bit (armv7) support
