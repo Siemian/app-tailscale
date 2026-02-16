@@ -40,7 +40,7 @@ RUN set -e && \
     cd /app && \
     echo "[Z2M-DBG] 4/8 install pnpm (armv7: npm --ignore-scripts; else: corepack or npm)" && \
     if [ "${BUILD_ARCH}" = "armv7" ]; then \
-        NODE_OPTIONS="--max-old-space-size=6144" npm install -g pnpm --ignore-scripts ; \
+        NODE_OPTIONS="--max-old-space-size=6144" npm install -g $(jq -r '.packageManager' package.json) --ignore-scripts ; \
     else \
         ( corepack enable 2>/dev/null && corepack prepare $(jq -r '.packageManager' package.json) --activate ) || \
         npm install -g $(jq -r '.packageManager' package.json) ; \
