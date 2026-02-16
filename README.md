@@ -41,6 +41,8 @@ Use your Zigbee devices without the vendor's bridge or gateway. It bridges event
 4. Click **Save**, then refresh the add-on store.
 5. Find **Tailscale** or **Zigbee2MQTT** under the new repository and install the add-on you need.
 
+**If you already added this repo and an add-on fails to install or build:** go to **Settings** → **Add-ons** → **Add-on store** → **⋮** → **Repositories**, then use **Reload** (or remove and re-add the repo URL) so Supervisor fetches the latest version of the addon. Otherwise it may use a cached copy with an outdated Dockerfile.
+
 ### Getting Zigbee2MQTT images (32-bit / armv7)
 
 - **Simplest:** Add this repository in Home Assistant and install Zigbee2MQTT. The **Deploy** workflow builds and publishes images (including armv7) to GitHub Container Registry when you push to `main` or create a release. After that, installing the add-on in HA will pull the image from the registry.

@@ -71,6 +71,7 @@ jobs:
           tags: |
             ghcr.io/${{ steps.owner.outputs.owner }}/${{ matrix.slug }}/${{ matrix.arch }}:${{ github.sha }}
             ghcr.io/${{ steps.owner.outputs.owner }}/${{ matrix.slug }}/${{ matrix.arch }}:edge
+            ghcr.io/${{ steps.owner.outputs.owner }}/${{ matrix.slug }}/${{ matrix.arch }}:${{ steps.build_version.outputs.version }}
           build-args: |
             BUILD_ARCH=${{ matrix.arch }}
             BUILD_FROM=${{ steps.from.outputs.from }}
@@ -91,8 +92,10 @@ jobs:
       matrix:
         slug: [tailscale, zigbee2mqtt]
     permissions:
+      contents: read
       packages: write
     steps:
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to GHCR
@@ -107,6 +110,11 @@ jobs:
           owner="${owner,,}"
           slug="${{ matrix.slug }}"
           sha="${{ github.sha }}"
+          if [ -f "${slug}/config.json" ]; then
+            version=$(jq -r '.version' "${slug}/config.json")
+          else
+            version=$(yq -r '.version' "${slug}/config.yaml")
+          fi
           docker buildx imagetools create -t "ghcr.io/${owner}/${slug}:${sha}" \
             "ghcr.io/${owner}/${slug}/amd64:${sha}" \
             "ghcr.io/${owner}/${slug}/aarch64:${sha}" \
@@ -115,3 +123,7 @@ jobs:
             "ghcr.io/${owner}/${slug}/amd64:edge" \
             "ghcr.io/${owner}/${slug}/aarch64:edge" \
             "ghcr.io/${owner}/${slug}/armv7:edge"
+          docker buildx imagetools create -t "ghcr.io/${owner}/${slug}:${version}" \
+            "ghcr.io/${owner}/${slug}/amd64:${version}" \
+            "ghcr.io/${owner}/${slug}/aarch64:${version}" \
+            "ghcr.io/${owner}/${slug}/armv7:${version}"
