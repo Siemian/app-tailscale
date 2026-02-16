@@ -18,7 +18,8 @@ permissions:
   security-events: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # Include slug so matrix jobs (tailscale vs zigbee2mqtt) don't cancel each other
+  group: ${{ github.workflow }}-${{ inputs.slug || 'default' }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:

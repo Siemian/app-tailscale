@@ -3,7 +3,8 @@
 name: App Deploy
 
 concurrency:
-  group: queue
+  # Include slug so matrix jobs (tailscale vs zigbee2mqtt) don't cancel each other
+  group: deploy-${{ inputs.slug || 'default' }}
 
 # yamllint disable-line rule:truthy
 on:
