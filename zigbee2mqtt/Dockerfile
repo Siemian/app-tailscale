@@ -12,6 +12,7 @@ RUN apk add --no-cache socat tini nodejs eudev && \
 # Dependencies and build
 FROM base as dependencies_and_build
 
+ARG BUILD_ARCH
 # More memory for Node (helps under QEMU emulation for armv7)
 ENV NODE_OPTIONS=--max-old-space-size=4096
 
@@ -36,10 +37,13 @@ RUN set -e && \
     fi && \
     echo "[Z2M-DBG] 3/8 Installed Zigbee2MQTT @ version $(cat /app/dist/.hash)" && \
     cd /app && \
-    echo "[Z2M-DBG] 4/8 install pnpm via standalone script (npm install -g fails on armv7/QEMU)" && \
-    ( corepack enable 2>/dev/null && corepack prepare $(jq -r '.packageManager' package.json) --activate ) || \
-    ( export PNPM_VERSION=$(jq -r '.packageManager' package.json | sed 's/pnpm@//') && curl -sfL https://get.pnpm.io/install.sh | env VERSION="$PNPM_VERSION" sh - ) && \
-    export PATH="/root/.local/share/pnpm:$PATH" && \
+    echo "[Z2M-DBG] 4/8 install pnpm (armv7: npm --ignore-scripts; else: corepack or npm)" && \
+    if [ "${BUILD_ARCH}" = "armv7" ]; then \
+        npm install -g pnpm --ignore-scripts ; \
+    else \
+        ( corepack enable 2>/dev/null && corepack prepare $(jq -r '.packageManager' package.json) --activate ) || \
+        npm install -g $(jq -r '.packageManager' package.json) ; \
+    fi && \
     echo "[Z2M-DBG] 5/8 pnpm install" && \
     pnpm install --frozen-lockfile --no-optional --unsafe-perm && \
     echo "[Z2M-DBG] 6/8 pnpm run build" && \
