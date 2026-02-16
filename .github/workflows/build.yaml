@@ -10,6 +10,7 @@ jobs:
   build:
     name: ${{ matrix.slug }} ${{ matrix.arch }}
     runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -40,6 +41,16 @@ jobs:
         id: date
         run: echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
 
+      - name: Set BUILD_VERSION
+        id: build_version
+        run: |
+          v="${{ steps.info.outputs.version }}"
+          if [ -z "$v" ] && [ -f "${{ matrix.slug }}/config.json" ]; then
+            v=$(jq -r '.version' "${{ matrix.slug }}/config.json")
+          fi
+          echo "version=${v:-edge}" >> "$GITHUB_OUTPUT"
+          echo "Using BUILD_VERSION=${v:-edge}"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -63,7 +74,7 @@ jobs:
           build-args: |
             BUILD_ARCH=${{ matrix.arch }}
             BUILD_FROM=${{ steps.from.outputs.from }}
-            BUILD_VERSION=${{ steps.info.outputs.version }}
+            BUILD_VERSION=${{ steps.build_version.outputs.version }}
             BUILD_DATE=${{ steps.date.outputs.date }}
             BUILD_DESCRIPTION=${{ steps.info.outputs.description }}
             BUILD_NAME=${{ steps.info.outputs.name }}

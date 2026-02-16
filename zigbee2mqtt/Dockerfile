@@ -12,7 +12,11 @@ RUN apk add --no-cache socat tini nodejs eudev && \
 # Dependencies and build
 FROM base as dependencies_and_build
 
-RUN apk add --no-cache --virtual .buildtools npm make gcc g++ linux-headers udev git python3 && \
+# More memory for Node (helps under QEMU emulation for armv7)
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
+RUN set -e && \
+    apk add --no-cache --virtual .buildtools npm make gcc g++ linux-headers udev git python3 && \
     if [ "${BUILD_VERSION}" = "edge" ]; \
     then \
         echo "Installing Edge version" && \
@@ -22,7 +26,7 @@ RUN apk add --no-cache --virtual .buildtools npm make gcc g++ linux-headers udev
         jq -n --arg commit $(eval cd /app;git rev-parse --short HEAD) '$commit' > /app/dist/.hash ; \
     else \
         echo "Installing Stable version ${BUILD_VERSION%-*}" && \
-        curl -sL -o "/app.tar.gz" \
+        curl -sfL -o "/app.tar.gz" \
             "https://github.com/Koenkk/zigbee2mqtt/archive/${BUILD_VERSION%-*}.tar.gz" && \
         tar xzvf "/app.tar.gz" && rm "/app.tar.gz" && \
         mv -v "zigbee2mqtt-${BUILD_VERSION%-*}" app && \
