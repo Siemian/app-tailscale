@@ -9,6 +9,7 @@
   "uart": true,
   "udev": true,
   "url": "https://github.com/zigbee2mqtt/hassio-zigbee2mqtt/tree/master/zigbee2mqtt",
+  "image": "ghcr.io/siemian/zigbee2mqtt/{arch}",
   "startup": "application",
   "services": [
     "mqtt:need"
