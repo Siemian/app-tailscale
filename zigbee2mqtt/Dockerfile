@@ -17,6 +17,7 @@ ARG BUILD_ARCH
 ENV NODE_OPTIONS=--max-old-space-size=4096
 
 RUN set -e && \
+    if [ "${BUILD_ARCH}" = "armv7" ]; then export NODE_OPTIONS="--max-old-space-size=6144"; fi && \
     echo "[Z2M-DBG] 1/8 apk add buildtools" && \
     apk add --no-cache --virtual .buildtools npm make gcc g++ linux-headers udev git python3 && \
     if [ "${BUILD_VERSION}" = "edge" ]; \
@@ -45,7 +46,8 @@ RUN set -e && \
         npm install -g $(jq -r '.packageManager' package.json) ; \
     fi && \
     echo "[Z2M-DBG] 5/8 pnpm install" && \
-    pnpm install --frozen-lockfile --no-optional --unsafe-perm && \
+    ( [ "${BUILD_ARCH}" != "armv7" ] && pnpm install --frozen-lockfile --no-optional --unsafe-perm ) || \
+    ( pnpm install --frozen-lockfile --no-optional --unsafe-perm --config child-concurrency=1 ) && \
     echo "[Z2M-DBG] 6/8 pnpm run build" && \
     pnpm run build && \
     echo "[Z2M-DBG] 7/8 pnpm install prod + remove prebuilds" && \

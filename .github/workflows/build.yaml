@@ -14,8 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slug: [tailscale, zigbee2mqtt]
-        arch: [amd64, aarch64, armv7]
+        # Temporarily only zigbee2mqtt armv7 for 32-bit bring-up; restore to:
+        # slug: [tailscale, zigbee2mqtt]
+        # arch: [amd64, aarch64, armv7]
+        slug: [zigbee2mqtt]
+        arch: [armv7]
     permissions:
       contents: read
       packages: write
@@ -89,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        slug: [tailscale, zigbee2mqtt]
+        slug: [zigbee2mqtt]
     permissions:
       packages: write
     steps:
@@ -101,17 +104,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create and push manifest
+      - name: Create and push manifest (armv7 only for now)
         run: |
           owner="${{ github.repository_owner }}"
           owner="${owner,,}"
           slug="${{ matrix.slug }}"
           sha="${{ github.sha }}"
-          docker buildx imagetools create -t "ghcr.io/${owner}/${slug}:${sha}" \
-            "ghcr.io/${owner}/${slug}/amd64:${sha}" \
-            "ghcr.io/${owner}/${slug}/aarch64:${sha}" \
-            "ghcr.io/${owner}/${slug}/armv7:${sha}"
-          docker buildx imagetools create -t "ghcr.io/${owner}/${slug}:edge" \
-            "ghcr.io/${owner}/${slug}/amd64:edge" \
-            "ghcr.io/${owner}/${slug}/aarch64:edge" \
-            "ghcr.io/${owner}/${slug}/armv7:edge"
+          docker buildx imagetools create -t "ghcr.io/${owner}/${slug}:${sha}" "ghcr.io/${owner}/${slug}/armv7:${sha}"
+          docker buildx imagetools create -t "ghcr.io/${owner}/${slug}:edge" "ghcr.io/${owner}/${slug}/armv7:edge"
