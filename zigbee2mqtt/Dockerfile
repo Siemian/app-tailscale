@@ -46,6 +46,7 @@ FROM base as release
 WORKDIR /app
 
 COPY rootfs /
+RUN chmod +x /docker-entrypoint.sh
 COPY --from=dependencies_and_build /app/node_modules ./node_modules
 COPY --from=dependencies_and_build /app/dist ./dist
 COPY --from=dependencies_and_build /app/package.json /app/LICENSE /app/index.js ./
