@@ -36,8 +36,10 @@ RUN set -e && \
     fi && \
     echo "[Z2M-DBG] 3/8 Installed Zigbee2MQTT @ version $(cat /app/dist/.hash)" && \
     cd /app && \
-    echo "[Z2M-DBG] 4/8 npm install -g pnpm" && \
-    npm install -g $(jq -r '.packageManager' package.json) && \
+    echo "[Z2M-DBG] 4/8 install pnpm via standalone script (npm install -g fails on armv7/QEMU)" && \
+    ( corepack enable 2>/dev/null && corepack prepare $(jq -r '.packageManager' package.json) --activate ) || \
+    ( export PNPM_VERSION=$(jq -r '.packageManager' package.json | sed 's/pnpm@//') && curl -sfL https://get.pnpm.io/install.sh | env VERSION="$PNPM_VERSION" sh - ) && \
+    export PATH="/root/.local/share/pnpm:$PATH" && \
     echo "[Z2M-DBG] 5/8 pnpm install" && \
     pnpm install --frozen-lockfile --no-optional --unsafe-perm && \
     echo "[Z2M-DBG] 6/8 pnpm run build" && \
