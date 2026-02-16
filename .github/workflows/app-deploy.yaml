@@ -50,6 +50,7 @@ jobs:
       description: ${{ steps.information.outputs.description }}
       environment: ${{ steps.release.outputs.environment }}
       name: ${{ steps.information.outputs.name }}
+      owner_lower: ${{ steps.owner_lower.outputs.owner }}
       slug: ${{ steps.override.outputs.slug }}
       target: ${{ steps.information.outputs.target }}
       version: ${{ steps.release.outputs.version }}
@@ -70,6 +71,9 @@ jobs:
         run: |
           slug="${INPUT_SLUG:-$DETECTED_SLUG}"
           echo "slug=${slug}" >> "$GITHUB_OUTPUT"
+      - name: Set lowercase repository owner
+        id: owner_lower
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
       - name: Gather version and environment
         id: release
         env:
@@ -138,13 +142,13 @@ jobs:
         with:
           outputs: type=image,push=true,compression=zstd,compression-level=9,force-compression=true,oci-mediatypes=true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:${{ needs.information.outputs.environment }}
-            ghcr.io/${{ github.repository_owner }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:${{ needs.information.outputs.version }}
+            ghcr.io/${{ needs.information.outputs.owner_lower }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:${{ needs.information.outputs.environment }}
+            ghcr.io/${{ needs.information.outputs.owner_lower }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:${{ needs.information.outputs.version }}
           context: ${{ needs.information.outputs.target }}
           file: ${{ needs.information.outputs.target }}/Dockerfile
           cache-from: |
             type=gha,scope=${{ matrix.architecture }}
-            type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:edge
+            type=registry,ref=ghcr.io/${{ needs.information.outputs.owner_lower }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:edge
           cache-to: type=gha,mode=max,scope=${{ matrix.architecture }}
           platforms: ${{ steps.flags.outputs.platform }}
           build-args: |
@@ -174,7 +178,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Create and push manifest
         env:
-          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_OWNER: ${{ needs.information.outputs.owner_lower }}
           SLUG: ${{ needs.information.outputs.slug }}
           ENVIRONMENT: ${{ needs.information.outputs.environment }}
           VERSION: ${{ needs.information.outputs.version }}

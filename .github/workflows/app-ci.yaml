@@ -31,6 +31,7 @@ jobs:
       build: ${{ steps.information.outputs.build }}
       description: ${{ steps.information.outputs.description }}
       name: ${{ steps.information.outputs.name }}
+      owner_lower: ${{ steps.owner_lower.outputs.owner }}
       slug: ${{ steps.override.outputs.slug }}
       target: ${{ steps.information.outputs.target }}
     steps:
@@ -51,6 +52,9 @@ jobs:
         run: |
           slug="${INPUT_SLUG:-$DETECTED_SLUG}"
           echo "slug=${slug}" >> "$GITHUB_OUTPUT"
+      - name: Set lowercase repository owner
+        id: owner_lower
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build ${{ matrix.architecture }}
@@ -96,7 +100,7 @@ jobs:
           file: ${{ needs.information.outputs.target }}/Dockerfile
           cache-from: |
             type=gha,scope=${{ matrix.architecture }}
-            type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:edge
+            type=registry,ref=ghcr.io/${{ needs.information.outputs.owner_lower }}/${{ needs.information.outputs.slug }}/${{ matrix.architecture }}:edge
           cache-to: type=gha,mode=max,scope=${{ matrix.architecture }}
           platforms: ${{ steps.flags.outputs.platform }}
           build-args: |
