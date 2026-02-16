@@ -13,7 +13,16 @@ on:
       - completed
 
 jobs:
-  workflows:
-    uses: hassio-addons/workflows/.github/workflows/addon-deploy.yaml@main
+  addon:
+    name: Deploy ${{ matrix.slug }}
+    strategy:
+      fail-fast: false
+      matrix:
+        slug:
+          - tailscale
+          - zigbee2mqtt
+    uses: ./.github/workflows/app-deploy.yaml
+    with:
+      slug: ${{ matrix.slug }}
     secrets:
       DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}

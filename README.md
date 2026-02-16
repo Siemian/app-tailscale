@@ -1,4 +1,4 @@
-# Home Assistant Community Add-on: Tailscale
+# Home Assistant Add-ons (32-bit supported fork)
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
@@ -6,37 +6,31 @@
 
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
-![Supports armhf Architecture][armhf-shield]
 ![Supports armv7 Architecture][armv7-shield]
-![Supports i386 Architecture][i386-shield]
 
 [![Github Actions][github-actions-shield]][github-actions]
 ![Project Maintenance][maintenance-shield]
-[![GitHub Activity][commits-shield]][commits]
 
-[![Discord][discord-shield]][discord]
-[![Community Forum][forum-shield]][forum]
+This repository is a **community fork** that keeps **32-bit (armv7)** support for the following add-ons, whose official versions no longer support 32-bit devices:
 
-[![Sponsor Frenck via GitHub Sponsors][github-sponsors-shield]][github-sponsors]
+- **Tailscale** – Zero config VPN for building secure networks
+- **Zigbee2MQTT** – Use your Zigbee devices without the vendor's bridge or gateway
 
-[![Support Frenck on Patreon][patreon-shield]][patreon]
+## Add-ons
 
-Zero config VPN for building secure networks.
+### Tailscale
 
-## About
+Tailscale is a zero config VPN that installs on any device in minutes, including your Home Assistant instance. Create a secure network between your servers, computers, and cloud instances.
 
-Tailscale is a zero config VPN, which installs on any device in minutes,
-including your Home Assistant instance.
+[:books: Tailscale add-on documentation][docs-tailscale]
 
-Create a secure network between your servers, computers, and cloud instances.
-Even when separated by firewalls or subnets, Tailscale just works. Tailscale
-manages firewall rules for you, and works from anywhere you are.
+### Zigbee2MQTT
 
-[:books: Read the full add-on documentation][docs]
+Use your Zigbee devices without the vendor's bridge or gateway. It bridges events and allows you to control your Zigbee devices via MQTT.
+
+[:books: Zigbee2MQTT add-on documentation][docs-zigbee2mqtt]
 
 ## Installation
-
-This is a fork of the official Tailscale add-on, modified for device compatibility.
 
 1. In Home Assistant, go to **Settings** → **Add-ons** → **Add-on store**.
 2. Click the **⋮** (three dots) in the top right and choose **Repositories**.
@@ -45,7 +39,7 @@ This is a fork of the official Tailscale add-on, modified for device compatibili
    https://github.com/YOUR_USERNAME/app-tailscale
    ```
 4. Click **Save**, then refresh the add-on store.
-5. Find **Tailscale** under the new repository and install it.
+5. Find **Tailscale** or **Zigbee2MQTT** under the new repository and install the add-on you need.
 
 ## Support
 
@@ -112,7 +106,6 @@ SOFTWARE.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[armhf-shield]: https://img.shields.io/badge/armhf-no-red.svg
 [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
 [commits-shield]: https://img.shields.io/github/commit-activity/y/hassio-addons/addon-tailscale.svg
 [commits]: https://github.com/hassio-addons/addon-tailscale/commits/main
@@ -120,7 +113,8 @@ SOFTWARE.
 [discord-ha]: https://discord.gg/c5DvZ4e
 [discord-shield]: https://img.shields.io/discord/478094546522079232.svg
 [discord]: https://discord.me/hassioaddons
-[docs]: https://github.com/hassio-addons/addon-tailscale/blob/main/tailscale/DOCS.md
+[docs-tailscale]: https://github.com/hassio-addons/addon-tailscale/blob/main/tailscale/DOCS.md
+[docs-zigbee2mqtt]: zigbee2mqtt/DOCS.md
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg
 [forum]: https://community.home-assistant.io/?u=frenck
 [frenck]: https://github.com/frenck
@@ -128,7 +122,6 @@ SOFTWARE.
 [github-actions]: https://github.com/hassio-addons/addon-tailscale/actions
 [github-sponsors-shield]: https://frenck.dev/wp-content/uploads/2019/12/github_sponsor.png
 [github-sponsors]: https://github.com/sponsors/frenck
-[i386-shield]: https://img.shields.io/badge/i386-no-red.svg
 [issue]: https://github.com/hassio-addons/addon-tailscale/issues
 [license-shield]: https://img.shields.io/github/license/hassio-addons/addon-tailscale.svg
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
