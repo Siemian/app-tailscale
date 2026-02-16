@@ -15,6 +15,8 @@ FROM base as dependencies_and_build
 ARG BUILD_ARCH
 # More memory for Node (helps under QEMU emulation for armv7)
 ENV NODE_OPTIONS=--max-old-space-size=4096
+# pnpm uses frozen-lockfile by default in CI (avoids --frozen-lockfile flag parsing issues)
+ENV CI=true
 
 RUN set -e && \
     if [ "${BUILD_ARCH}" = "armv7" ]; then export NODE_OPTIONS="--max-old-space-size=6144"; fi && \
@@ -46,13 +48,13 @@ RUN set -e && \
         npm install -g $(jq -r '.packageManager' package.json) ; \
     fi && \
     echo "[Z2M-DBG] 5/8 pnpm install" && \
-    ( [ "${BUILD_ARCH}" != "armv7" ] && pnpm install --frozen-lockfile --no-optional --unsafe-perm ) || \
-    ( pnpm install --frozen-lockfile --no-optional --unsafe-perm --config child-concurrency=1 ) && \
+    ( [ "${BUILD_ARCH}" = "armv7" ] && echo "child-concurrency=1" >> .npmrc ; true ) && \
+    pnpm install --no-optional --unsafe-perm && \
     echo "[Z2M-DBG] 6/8 pnpm run build" && \
     pnpm run build && \
     echo "[Z2M-DBG] 7/8 pnpm install prod + remove prebuilds" && \
     rm -rf node_modules && \
-    pnpm install --frozen-lockfile --no-optional --unsafe-perm --prod && \
+    pnpm install --no-optional --unsafe-perm --prod && \
     rm -rf $(find ./node_modules/.pnpm/ -wholename "*/@serialport/bindings-cpp/prebuilds" -type d) && \
     echo "[Z2M-DBG] 8/8 pnpm rebuild @serialport/bindings-cpp" && \
     pnpm rebuild @serialport/bindings-cpp
